@@ -36,7 +36,6 @@ const userSchema = mongoose.Schema({
         type: Date,
         required: true
     }
-
 });
 
 module.exports = mongoose.model('User', userSchema);
