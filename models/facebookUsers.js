@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const facebookUserSchema = new mongoose.Schema({
     fullname: String,
     pic: String,

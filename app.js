@@ -11,6 +11,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var googleAuth = require('./routes/googleUsers');
 var facebookAuth = require('./routes/facebookUsers');
+var discussionRouter = require('./routes/discussions');
+var messageRouter = require('./routes/messages');
 
 // my code
 var app = express();
@@ -41,6 +43,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', googleAuth);
 app.use('/auth', facebookAuth);
+app.use('/discussions', discussionRouter);
+app.use('/', messageRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

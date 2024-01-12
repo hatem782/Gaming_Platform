@@ -95,7 +95,7 @@ const signup = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { fullname, email, username, password, confirmPassword, country, onlineID, phoneNumber, dateOfBirth } = req.body;
+    const { fullname, email, username, password, country, onlineID, phoneNumber, dateOfBirth } = req.body;
 
     try {
         // Check if the user exists
@@ -106,6 +106,7 @@ const updateUser = async (req, res) => {
         }
 
         // Check for email and username uniqueness if they are provided in the request
+        //prevents a user from updating their email or username to one that already exists in the database
         if (email) {
             const existingEmail = await User.findOne({ email, _id: { $ne: id } });
             if (existingEmail) {

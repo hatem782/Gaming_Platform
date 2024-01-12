@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const googleUserSchema = new mongoose.Schema({
     fullname: String,
     email: String,
