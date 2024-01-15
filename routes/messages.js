@@ -5,11 +5,13 @@ const {
     getMessages,
     updateMessage,
     deleteMessage
-} = require('../controllers/messages.js')
+} = require('../controllers/messages.js');
+const auth = require("../middleware/auth.js");
 
-router.post('/discussions/:discussionId/messages', createMessage);
-router.get('/discussions/:discussionId/messages', getMessages);
-router.put('/discussions/:discussionId/messages/:messageId', updateMessage);
-router.delete('/discussions/:discussionId/messages/:messageId', deleteMessage);
+
+router.post('/discussions/:discussionId/messages', auth, createMessage);
+router.get('/discussions/:discussionId/messages', auth, getMessages);
+router.put('/discussions/:discussionId/messages/:messageId', auth, updateMessage);
+router.delete('/discussions/:discussionId/messages/:messageId', auth, deleteMessage);
 
 module.exports = router;
