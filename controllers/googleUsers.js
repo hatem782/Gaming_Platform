@@ -1,5 +1,5 @@
 const GoogleStrategy = require("passport-google-oauth20");
-const UserModel = require("../models/googleUsers.js");
+const { GoogleUser } = require("../models/users");
 require('dotenv').config();
 
 async function configureGoogleAuthentication(passport) {
@@ -8,7 +8,7 @@ async function configureGoogleAuthentication(passport) {
     });
 
     passport.deserializeUser(function (id, done) {
-        UserModel.findById(id, function (err, user) {
+        GoogleUser.findById(id, function (err, user) {
             done(err, user);
         });
     });
@@ -23,7 +23,7 @@ async function configureGoogleAuthentication(passport) {
             async (accessToken, refreshToken, profile, cb) => {
                 try {
                     console.log(profile);
-                    const existingUser = await UserModel.findOne({ googleId: profile.id });
+                    const existingUser = await GoogleUser.findOne({ googleId: profile.id });
 
                     if (existingUser) {
                         // Update existing user information:
@@ -33,7 +33,7 @@ async function configureGoogleAuthentication(passport) {
                             pic: profile.photos[0].value,
                             secret: accessToken
                         };
-                        await UserModel.findOneAndUpdate(
+                        await GoogleUser.findOneAndUpdate(
                             { _id: existingUser._id },
                             { $set: updatedUser },
                             { new: true }
@@ -41,7 +41,7 @@ async function configureGoogleAuthentication(passport) {
                         return cb(null, existingUser);
                     } else {
                         // Create a new user:
-                        const newUser = new UserModel({
+                        const newUser = new GoogleUser({
                             googleId: profile.id,
                             username: profile.displayName,
                             email: profile.emails[0].value,

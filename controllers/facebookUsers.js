@@ -1,6 +1,6 @@
 const facebookStrategy = require('passport-facebook');
-const UserModel = require('../models/facebookUsers');
-require('dotenv').config;
+const { User, FacebookUser } = require('../models/users'); // Adjust the path based on your project structure
+require('dotenv').config();
 
 async function configureFacebookAuthentication(passport) {
     passport.serializeUser(function (user, done) {
@@ -8,7 +8,7 @@ async function configureFacebookAuthentication(passport) {
     });
 
     passport.deserializeUser(function (id, done) {
-        UserModel.findById(id, function (err, user) {
+        User.findById(id, function (err, user) {
             done(err, user);
         });
     });
@@ -23,7 +23,7 @@ async function configureFacebookAuthentication(passport) {
             async (accessToken, refreshToken, profile, cb) => {
                 try {
                     console.log(profile);
-                    const existingUser = await UserModel.findOne({ facebookId: profile.id });
+                    const existingUser = await FacebookUser.findOne({ facebookId: profile.id });
 
                     if (existingUser) {
                         // Update existing user information:
@@ -33,7 +33,7 @@ async function configureFacebookAuthentication(passport) {
                             pic: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : '',
                             secret: accessToken
                         };
-                        await UserModel.findOneAndUpdate(
+                        await FacebookUser.findOneAndUpdate(
                             { _id: existingUser._id },
                             { $set: updatedUser },
                             { new: true }
@@ -41,7 +41,7 @@ async function configureFacebookAuthentication(passport) {
                         return cb(null, existingUser);
                     } else {
                         // Create a new user:
-                        const newUser = new UserModel({
+                        const newUser = new FacebookUser({
                             facebookId: profile.id,
                             username: profile.displayName,
                             email: profile.emails && profile.emails.length > 0 ? profile.emails[0].value : '',

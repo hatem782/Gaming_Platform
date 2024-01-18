@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
-const userSchema = mongoose.Schema({
+// Base user schema
+const userSchema = new mongoose.Schema({
     fullname: {
         type: String,
         required: true,
-        trim: true // remove whitespaces
+        trim: true
     },
     email: {
         type: String,
@@ -35,7 +36,65 @@ const userSchema = mongoose.Schema({
     dateOfBirth: {
         type: Date,
         required: true
-    }
+    },
+}, { discriminatorKey: 'provider' });
+
+// Facebook user schema
+const facebookUserSchema = new mongoose.Schema({
+
+    facebookId: String,
+    pic: String,
+    secret: String,
+    dateOfBirth: { type: Date, required: false },
+    onlineID: {
+        type: String,
+        required: false
+    },
+    country: {
+        type: String,
+        required: false
+    },
+    fullname: {
+        type: String,
+        required: false
+    },
+    password: {
+        type: String,
+        required: false
+    },
 });
 
-module.exports = mongoose.model('User', userSchema);
+// Google user schema
+const googleUserSchema = new mongoose.Schema({
+    googleId: String,
+    pic: String,
+    secret: String,
+    dateOfBirth: { type: Date, required: false },
+    onlineID: {
+        type: String,
+        required: false
+    },
+    country: {
+        type: String,
+        required: false
+    },
+    fullname: {
+        type: String,
+        required: false
+    },
+    password: {
+        type: String,
+        required: false
+    },
+});
+
+// Create models with Discriminators
+const User = mongoose.model('User', userSchema);
+const FacebookUser = User.discriminator('facebook', facebookUserSchema);
+const GoogleUser = User.discriminator('google', googleUserSchema);
+
+module.exports = {
+    User,
+    FacebookUser,
+    GoogleUser,
+};
