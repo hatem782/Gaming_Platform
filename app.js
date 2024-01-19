@@ -17,10 +17,9 @@ var discussionRouter = require('./routes/discussions');
 var messageRouter = require('./routes/messages');
 
 var app = express();
+app.use(cors());
 const server = http.createServer(app);
 const io = socketIo(server);
-app.use(cors());
-
 
 
 const CONNECTION_URL = 'mongodb+srv://aymenelouaer97:qSCsZbsoYK6VV0OA@cluster0.qmwmrkv.mongodb.net/?retryWrites=true&w=majority';
@@ -33,8 +32,9 @@ mongoose.connect(CONNECTION_URL)
     console.error("Error connecting to MongoDB:", err);
   });
 
-io.on('connection', (socket) => {
+io.on('connection', function (socket) {
   console.log('User connected:', socket.id);
+  joinRoom(socket, io);
 });
 
 // view engine setup
