@@ -6,6 +6,8 @@ var logger = require('morgan');
 var cors = require('cors');
 var mongoose = require('mongoose');
 require('dotenv').config();
+const http = require('http');
+const socketIo = require('socket.io');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -14,10 +16,12 @@ var facebookAuth = require('./routes/facebookUsers');
 var discussionRouter = require('./routes/discussions');
 var messageRouter = require('./routes/messages');
 
-// my code
 var app = express();
-
+const server = http.createServer(app);
+const io = socketIo(server);
 app.use(cors());
+
+
 
 const CONNECTION_URL = 'mongodb+srv://aymenelouaer97:qSCsZbsoYK6VV0OA@cluster0.qmwmrkv.mongodb.net/?retryWrites=true&w=majority';
 
@@ -27,7 +31,11 @@ mongoose.connect(CONNECTION_URL)
   })
   .catch((err) => {
     console.error("Error connecting to MongoDB:", err);
-  }); //end of my code
+  });
+
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

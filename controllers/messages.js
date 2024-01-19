@@ -1,5 +1,7 @@
 const Discussion = require('../models/discussions.js');
 const Message = require('../models/messages.js');
+const io = require('../socket.js');
+
 
 const createMessage = async (req, res) => {
     console.log('req.params:', req.params);
@@ -14,9 +16,9 @@ const createMessage = async (req, res) => {
         if (!discussion) {
             return res.status(404).json({ message: "Discussion not found!" });
         }
-
+        const sender = req.userID;
         // create a new message using the Message model
-        const newMessage = new Message({ content });
+        const newMessage = new Message({ sender, content });
         // save the new message
         await newMessage.save();
 
@@ -26,6 +28,9 @@ const createMessage = async (req, res) => {
 
         // save the updated discussion, including the new message
         await discussion.save();
+
+        // Emit a message created event to all connected clients in the discussion room
+        io.to(discussionId).emit("messageCreated", { discussionId, message: newMessage });
 
         res.status(201).json({ message: "Message created successfully", discussion });
     } catch (error) {
@@ -46,7 +51,9 @@ const getMessages = async (req, res) => {
         }
         const messages = discussion.messages.map(message => ({
             _id: message._id,
-            content: message.content
+            sender: message.sender,
+            content: message.content,
+            timestamp: message.timestamp
         }));
 
         res.status(200).json({ messages });
@@ -82,6 +89,9 @@ const updateMessage = async (req, res) => {
 
         // find and update the message in the Message model
         await Message.findByIdAndUpdate(messageId, { content });
+
+        // Emit a message updated event to all connected clients in the discussion room
+        io.to(discussionId).emit("messageUpdated", { discussionId, messageId, updatedContent: content });
 
         const updatedMessage = await Message.findById(messageId);
 
@@ -120,6 +130,9 @@ const deleteMessage = async (req, res) => {
 
         // explicitly delete the message from the Message model
         await Message.findByIdAndDelete(messageToRemove._id);
+
+        // Emit a message deleted event to all connected clients in the discussion room
+        io.to(discussionId).emit("messageDeleted", { discussionId, messageId });
 
         return res.status(200).json({ message: 'Message deleted Successfully' });
     } catch (error) {

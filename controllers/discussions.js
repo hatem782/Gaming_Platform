@@ -1,4 +1,5 @@
 const Discussion = require('../models/discussions.js');
+const io = require('../socket.js');
 
 const createDiscussion = async (req, res) => {
     const { title, content, tags } = req.body;
@@ -15,8 +16,11 @@ const createDiscussion = async (req, res) => {
             tags: tags ? (Array.isArray(tags) ? tags : [tags]) : []
         });
 
-        // save the discussion to  the database
-        const savedDiscussion = newDiscussion.save();
+        // save the discussion to the database
+        const savedDiscussion = await newDiscussion.save();
+
+        // Emit a discussion created event to all connected clients
+        io.emit("discussionCreated", { discussion: savedDiscussion });
 
         res.status(201).json({ message: "Discussion created successfully" });
     } catch (error) {
@@ -67,7 +71,10 @@ const updateDiscussion = async (req, res) => {
         discussion.tags = tags ? (Array.isArray(tags) ? tags : [tags]) : [];
 
         // save the update discussion to the dataebase
-        const updateDiscussion = await discussion.save();
+        const updatedDiscussion = await discussion.save();
+
+        // Emit a discussion updated event to all connected clients
+        io.emit("discussionUpdated", { discussion: updatedDiscussion });
 
         res.status(200).json({ message: 'Discussion Updated Successfully' });
     } catch (error) {
@@ -86,6 +93,9 @@ const deleteDiscussion = async (req, res) => {
         if (!deleteDiscussion) {
             return res.staus(404).json({ message: "Discussion not found!" });
         }
+        // Emit a discussion deleted event to all connected clients
+        io.emit("discussionDeleted", { discussionId });
+
         res.status(200).json({ message: 'Discussion deleted successfully' })
     } catch (error) {
         console.error(error);
