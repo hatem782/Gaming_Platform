@@ -1,2 +1,5 @@
 export const User = require('./user.model');
-export const UserNote = require('./userNote.model');
+export const Discussion = require('./discussion.model');
+export const Message = require('./message.model');
+
+

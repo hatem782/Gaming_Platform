@@ -60,13 +60,20 @@ const userSchema = new mongoose.Schema(
     picture: {
       type: String,
       trim: true
-    }
+    },
+    dicussions: [
+      {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Discussion',
+          required: false
+      }
+  ],
   },
   {
     timestamps: true
   }
 );
-const ALLOWED_FIELDS = ['id', 'name', 'email', 'picture', 'role', 'createdAt'];
+const ALLOWED_FIELDS = ['id', 'name', 'email', 'picture', 'role','dicussions', 'createdAt'];
 
 /**
  * Add your

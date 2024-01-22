@@ -5,6 +5,8 @@ import { apiJson } from '../../../api/utils/Utils';
 const userRoutes = require('./user.route');
 const authRoutes = require('./auth.route');
 const uploadRoutes = require('./upload.route');
+const dicussionsRoute = require('./discussion.route');
+
 
 const router = express.Router();
 
@@ -20,6 +22,7 @@ router.get('/status', (req, res, next) => {
  * GET v1/docs
  */
 router.use('/docs', express.static('docs'));
+router.use('/discussion', dicussionsRoute);
 
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);

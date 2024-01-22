@@ -8,9 +8,9 @@ const ADMIN = 'admin';
 const LOGGED_USER = '_loggedUser';
 
 import * as Bluebird from 'bluebird';
-// declare global {
-//   export interface Promise<T> extends Bluebird<T> {}
-// }
+declare global {
+  export interface Promise<T> extends Bluebird<T> {}
+}
 
 const handleJWT = (req: any, res: any, next: any, roles: any) => async (err: any, user: any, info: any) => {
   const error = err || info;
@@ -33,7 +33,7 @@ const handleJWT = (req: any, res: any, next: any, roles: any) => async (err: any
   if (roles === LOGGED_USER) {
     // validate if the "Logged User Id" is the same with "params.userId" (resource Id)
     // only the same logged in user can access the resource Id. (unless it has admin role)
-    if (user.role !== 'admin' && req.params.userId !== user._id.toString()) {
+    if (req.params.userId !== user._id.toString()) {
       apiError.status = httpStatus.FORBIDDEN;
       apiError.message = 'Forbidden';
       return next(apiError);

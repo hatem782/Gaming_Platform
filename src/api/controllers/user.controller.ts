@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const httpStatus = require('http-status');
 const { omit } = require('lodash');
-import { User, UserNote } from '../../api/models';
+import { User, Discussion } from '../../api/models';
 import { apiJson } from '../../api/utils/Utils';
 const { handler: errorHandler } = require('../middlewares/error');
 
@@ -111,32 +111,14 @@ exports.listUserNotes = async (req: Request, res: Response, next: NextFunction) 
   try {
     const { userId } = req.params;
     req.query = { ...req.query, user: new ObjectId(userId) }; // append to query (by userId) to final query
-    const data = (await UserNote.list({ query: req.query })).transform(req);
-    apiJson({ req, res, data, model: UserNote });
+    const data = (await Discussion.list({ query: req.query })).transform(req);
+    apiJson({ req, res, data, model: Discussion });
   } catch (e) {
     next(e);
   }
 };
 
-/**
- * Add a note.
- * @example POST /v1/users/userId/notes - payload { title, note }
- */
-exports.createNote = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req.params;
-  const { title, note } = req.body;
-  try {
-    const newNote = new UserNote({
-      user: new ObjectId(userId),
-      title,
-      note
-    });
-    const data = await newNote.save();
-    apiJson({ req, res, data, model: UserNote });
-  } catch (e) {
-    next(e);
-  }
-};
+
 
 /**
  * Read a user's note.
@@ -152,7 +134,7 @@ exports.readUserNote = async (req: Request, res: Response, next: NextFunction) =
     return next(); // only logged in user can delete her own notes
   }
   try {
-    const data = await UserNote.findOne({ user: new ObjectId(userId), _id: new ObjectId(noteId) });
+    const data = await Discussion.findOne({ user: new ObjectId(userId), _id: new ObjectId(noteId) });
     apiJson({ req, res, data });
   } catch (e) {
     next(e);
@@ -174,7 +156,7 @@ exports.updateUserNote = async (req: Request, res: Response, next: NextFunction)
   }
   try {
     const query = { user: new ObjectId(userId), _id: new ObjectId(noteId) };
-    await UserNote.findOneAndUpdate(query, { note }, {});
+    await Discussion.findOneAndUpdate(query, { note }, {});
     apiJson({ req, res, data: {} });
   } catch (e) {
     next(e);
@@ -193,7 +175,7 @@ exports.deleteUserNote = async (req: Request, res: Response, next: NextFunction)
     return next(); // only logged in user can delete her own notes
   }
   try {
-    await UserNote.remove({ user: new ObjectId(userId), _id: new ObjectId(noteId) });
+    await Discussion.remove({ user: new ObjectId(userId), _id: new ObjectId(noteId) });
     apiJson({ req, res, data: {} });
   } catch (e) {
     next(e);
@@ -204,25 +186,25 @@ exports.deleteUserNote = async (req: Request, res: Response, next: NextFunction)
  * Like user note
  * @public
  */
-exports.likeUserNote = async (req: Request, res: Response, next: NextFunction) => {
-  const { noteId } = req.params;
-  const { _id } = req.route.meta.user;
-  const currentUserId = _id.toString();
-  if (likesMap[`${currentUserId}__${noteId}`]) {
-    return next(); // already liked => return.
-  }
-  try {
-    const query = { _id: new ObjectId(noteId) };
-    const dbItem = await UserNote.findOne(query);
-    const newLikes = (dbItem.likes > 0 ? dbItem.likes : 0) + 1;
+// exports.likeUserNote = async (req: Request, res: Response, next: NextFunction) => {
+//   const { noteId } = req.params;
+//   const { _id } = req.route.meta.user;
+//   const currentUserId = _id.toString();
+//   if (likesMap[`${currentUserId}__${noteId}`]) {
+//     return next(); // already liked => return.
+//   }
+//   try {
+//     const query = { _id: new ObjectId(noteId) };
+//     const dbItem = await UserNote.findOne(query);
+//     const newLikes = (dbItem.likes > 0 ? dbItem.likes : 0) + 1;
 
-    await UserNote.findOneAndUpdate(query, { likes: newLikes }, {});
-    likesMap[`${currentUserId}__${noteId}`] = 1; // flag as already liked.
-    apiJson({ req, res, data: {} });
-  } catch (e) {
-    next(e);
-  }
-};
+//     await UserNote.findOneAndUpdate(query, { likes: newLikes }, {});
+//     likesMap[`${currentUserId}__${noteId}`] = 1; // flag as already liked.
+//     apiJson({ req, res, data: {} });
+//   } catch (e) {
+//     next(e);
+//   }
+// };
 
 /**
  * Delete user
