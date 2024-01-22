@@ -56,27 +56,6 @@ exports.setup = (server: any) => {
         
         socket.join(conversation);
     
-        if(user.role == "superadmin"){
-    
-          socket.emit('message', {
-            user,
-            text: `Admin, welcome to the chat `,
-          });
-          socket.broadcast
-          .to(conversation)
-          .emit('message', { user, text: `Admin has joined the chat!` });
-        }
-        else if(user.role == "sousadmin"){
-    
-          socket.emit('message', {
-            user,
-            text: `Sous-admin, welcome to the chat `,
-          });
-          socket.broadcast
-          .to(conversation)
-          .emit('message', { user, text: `Sous-admin has joined the chat!` });
-        }
-        else if(user.role == "user" ||user.role == "responsable" ){
     
           socket.emit('message', {
             user,
@@ -85,7 +64,7 @@ exports.setup = (server: any) => {
           socket.broadcast
             .to(conversation)
             .emit('message', { user, text: `${user.firstName} has joined the chat!` });
-        }
+     
       });
     
       socket.on("newnotif", async (data:any) => {
