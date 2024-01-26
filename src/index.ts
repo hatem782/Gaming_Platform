@@ -85,11 +85,11 @@ io.on('connection', (socket: any) => {
 
       socket.emit('message', {
         user,
-        text: `${user.firstName}, welcome to the chat `,
+        text: `${user.name}, welcome to the chat `,
       });
       socket.broadcast
         .to(conversation)
-        .emit('message', { user, text: `${user.firstName} has joined the chat!` });
+        .emit('message', { user, text: `${user.name} has joined the chat!` });
  
   });
 

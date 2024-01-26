@@ -3,18 +3,14 @@ const mongoose = require('mongoose');
 import { transformData, listData } from '../utils/ModelUtils';
 const APIError = require('../../api/utils/APIError');
 const httpStatus = require('http-status');
-const console= ['playstation','xbox','pc']
+
 const discussion = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true
   },
-  console:{
-    type: String,
-    enum: console,
-    default: 'pc'
-  },
+ 
   participants: [
       {
           type: mongoose.Schema.Types.ObjectId,
@@ -31,10 +27,7 @@ const discussion = new mongoose.Schema(
       type: String,
       required: true
   },
-  Level: {
-    type: String,
-    required: true
-},
+
 ispublic:{
   type: Boolean,
   default:"false",
@@ -61,7 +54,7 @@ Max_Players:{
   },
   { timestamps: true }
 );
-const ALLOWED_FIELDS = ['id','creator', 'participants','ispublic','Average_Bet','Max_Players', 'title','Level', 'game', 'tags',"messages", 'createdAt'];
+const ALLOWED_FIELDS = ['id','creator', 'participants','ispublic','Average_Bet','Max_Players', 'title', 'game', 'tags',"messages", 'createdAt'];
 
 discussion.method({
   // query is optional, e.g. to transform data for response but only include certain "fields"
