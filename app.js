@@ -15,6 +15,7 @@ var googleAuth = require('./routes/googleUsers');
 var facebookAuth = require('./routes/facebookUsers');
 var discussionRouter = require('./routes/discussions');
 var messageRouter = require('./routes/messages');
+var stripeRouter = require('./routes/stripe');
 
 var app = express();
 app.use(cors());
@@ -53,6 +54,7 @@ app.use('/auth', googleAuth);
 app.use('/auth', facebookAuth);
 app.use('/discussions', discussionRouter);
 app.use('/', messageRouter);
+app.use('/stripe', stripeRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

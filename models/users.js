@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    stripeCustomId: String,
+    balance: {
+        type: Number,
+        default: 0
+    }
 }, { discriminatorKey: 'provider' });
 
 // Facebook user schema
