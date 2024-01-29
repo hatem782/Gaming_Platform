@@ -13,7 +13,7 @@ const getMessages = (req: any, res: any, next: any) => {
     });
 };
 
-const getAllDiscussion = async (req: Request, res: Response, next: any) => {
+const getAllDiscussion = async (req: Request, res: Response, next: NextFunction) => {
   Discussion.find({ ...req.query })
     .populate('creator participats')
     .sort({ date: 'asc' })
@@ -23,7 +23,7 @@ const getAllDiscussion = async (req: Request, res: Response, next: any) => {
     });
 };
 
-const sendMessage = (req: any, res: any, next: any) => {
+const sendMessage = (req: Request, res: Response, next: NextFunction) => {
   const { text } = req.body;
   if (!text) {
     return res.send({ error: 'missing params in request' });
@@ -40,31 +40,11 @@ const sendMessage = (req: any, res: any, next: any) => {
     res.json(message);
   });
 };
-const createDiscussion = (req: any, res: any, next: any) => {
-  const { userId } = req.body;
-  console.log(userId);
 
-  if (!userId && (!req.body.sousadminId && !req.body.superadminId)) {
-    return res.send({ error: 'missing params in request' });
-  }
-
-  const discussion = new Discussion({
-  });
-
-  discussion.user = userId;
-  if (req.body.superadminId)
-    discussion.superadmin = req.body.superadminId;
-  if (req.body.sousadminId)
-    discussion.sousadmin = req.body.sousadminId;
-  discussion.save((err: any) => {
-    if (err) return next(err);
-    res.json(discussion);
-  });
-};
 
 module.exports = {
   getMessages,
   sendMessage,
-  createDiscussion,
+ 
   getAllDiscussion
 };

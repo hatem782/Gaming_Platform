@@ -44,6 +44,12 @@ Max_Players:{
   min:1,
   required: true
 },
+code :{
+  type:String,
+  unique:true,
+  
+
+},
   tags: {
       type: [String]
   },

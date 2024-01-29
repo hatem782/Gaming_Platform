@@ -6,7 +6,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const APIError = require('../../api/utils/APIError');
 const Discussion = require('../models/discussion.model');
 const Demande = require('../models/demande.model');
-
+const uuidv4 = require('uuid/v4');
 
 import { apiJson } from '../../api/utils/Utils';
 
@@ -19,6 +19,27 @@ const list = async (req: Request, res: Response, next: NextFunction) => {
         apiJson({ req, res, data, model: Discussion });
     } catch (e) {
         next(e);
+    }
+};
+// Function to get discussions that the user is already a member of
+const getDiscussionsUserIsMemberOf = async (req: any, res: any, next: any) => {
+    const userId = req.route.meta.user._id;
+    try {
+        const discussions = await Discussion.find({ participants: userId }).exec();
+        res.json(discussions);
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Function to get discussions that the user is not a member of
+const getDiscussionsUserIsNotMemberOf = async (req: any, res: any, next: any) => {
+    const userId = req.route.meta.user._id;
+    try {
+        const discussions = await Discussion.find({ participants: { $ne: userId } }).exec();
+        res.json(discussions);
+    } catch (err) {
+        next(err);
     }
 };
 const createDiscussion = (req: any, res: any, next: any) => {
@@ -61,11 +82,60 @@ const joinDiscussion = async(req: any, res: any, next: any) => {
     const user = req.route.meta.user;
     try {
         const discussion = await Discussion.get(id);
-       const demande = new Demande({User:user,discussion:id})
-       
-       demande.save((err: any) => {
+       if(discussion.participants.length  >= discussion.max_players){
+           throw new Error('this discussion is full');
+       }
+       const userIndex = discussion.participants.indexOf(user._id);
+       if (userIndex != -1) {
+           throw new Error('User is already in the discussion');
+       }
+       discussion.participants = [...discussion.participants,user._id]
+       discussion.save((err: any) => {
         if (err) return next(err);
-        res.json(demande);
+        res.json(discussion);
+    });
+    }catch(err){
+        next(err);
+    }
+
+};
+const leaveDiscussion = async (req: any, res: any, next: any) => {
+    const { id } = req.params;
+    const user = req.route.meta.user;
+    try {
+        const discussion = await Discussion.get(id);
+        
+        // Check if the user is a participant in the discussion
+        const userIndex = discussion.participants.indexOf(user._id);
+        if (userIndex === -1) {
+            throw new Error('User is not a participant in this discussion');
+        }
+        
+        // Remove the user ID from the participants array
+        discussion.participants.splice(userIndex, 1);
+        
+        // Save the updated discussion
+        discussion.save((err: any) => {
+            if (err) return next(err);
+            res.json(discussion);
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+const createCode = async(req: any, res: any, next: any) => {
+    const { id} = req.param;
+    const user = req.route.meta.user;
+    try {
+        const discussion = await Discussion.get(id);
+        if(discussion.code !=null){
+            res.json({ req, res, data: discussion.code });
+        }
+       discussion.code =  uuidv4();
+       
+       discussion.save((err: any) => {
+        if (err) return next(err);
+        res.json({ req, res, data: discussion.code });
     });
     }catch(err){
         next(err);
@@ -91,5 +161,10 @@ module.exports = {
     joinDiscussion,
     deleteDiscussion,
     list,
-    getOneDiscussion
+    getOneDiscussion,
+    createCode,
+    leaveDiscussion,
+    getDiscussionsUserIsMemberOf,
+    getDiscussionsUserIsNotMemberOf
+    
 };

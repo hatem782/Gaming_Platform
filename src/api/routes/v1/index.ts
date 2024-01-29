@@ -7,7 +7,7 @@ const authRoutes = require('./auth.route');
 const uploadRoutes = require('./upload.route');
 const dicussionsRoute = require('./discussion.route');
 const ChallengeRoute = require('./challenge.route');
-// const demandeRoute = require('./demande.route');
+const messageRoute = require('./message.route');
 
 
 
@@ -28,7 +28,7 @@ router.get('/status', (req, res, next) => {
 router.use('/docs', express.static('docs'));
 router.use('/discussion', dicussionsRoute);
 router.use('/challenge', ChallengeRoute);
-// router.use('/demande', demandeRoute);
+router.use('/message', messageRoute);
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 router.use('/upload', uploadRoutes);
