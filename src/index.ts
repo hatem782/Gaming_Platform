@@ -1,3 +1,5 @@
+import { User } from "./api/models";
+
 const serverless = require('serverless-http'); // Netlify
 
 // make bluebird default Promise
@@ -107,6 +109,20 @@ io.on('connection', (socket: any) => {
     
 
   });
+  socket.on('searchUserByEmail', async (email:String) => {
+    // Perform a search for the user by email (you'll need to implement this logic)
+    const user = await User.findOne({email:email});
+
+    if (user) {
+      // If user is found, emit a 'userFound' event to the client
+      socket.emit('userFound', user);
+    } else {
+      // If user is not found, emit a 'userNotFound' event to the client
+      socket.emit('userNotFound');
+    }
+  });
+  
+
   
   socket.on('sendMessage', (message: any, user: any, discussionId: any, callback: any) => {
     console.log("message.discussionId",message.discussionId);
