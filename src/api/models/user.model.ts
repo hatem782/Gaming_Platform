@@ -64,27 +64,38 @@ const userSchema = new mongoose.Schema(
     country: {
       type: String,
       required: true
-  },
-  phoneNumber: {
-    type: String
-},
-dateOfBirth: {
-    type: Date,
-    required: true
-},
+    },
+    phoneNumber: {
+      type: String
+    },
+    dateOfBirth: {
+      type: Date,
+      required: true
+    },
     dicussions: [
       {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Discussion',
-          required: false
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Discussion',
+        required: false
       }
-  ],
+    ]
   },
   {
     timestamps: true
   }
 );
-const ALLOWED_FIELDS = ['id', 'name', 'email', 'picture', 'role','country','dicussions','phoneNumber','dateOfBirth', 'createdAt'];
+const ALLOWED_FIELDS = [
+  'id',
+  'name',
+  'email',
+  'picture',
+  'role',
+  'country',
+  'dicussions',
+  'phoneNumber',
+  'dateOfBirth',
+  'createdAt'
+];
 
 /**
  * Add your

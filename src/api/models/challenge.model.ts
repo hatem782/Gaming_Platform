@@ -1,42 +1,52 @@
-export { };
+export {};
 const mongoose = require('mongoose');
 import { transformData, listData } from '../../api/utils/ModelUtils';
 
-const console= ['playstation','xbox','pc']
-const level= ['Beginner','Casual','Serious','Expert']
+const console = ['playstation', 'xbox', 'pc'];
+const level = ['Beginner', 'Casual', 'Serious', 'Expert'];
 const ChallengeSchema = new mongoose.Schema(
   {
     enabled: {
       type: Boolean,
       default: true
     },
-    game:{
-        type:String,
-        required:true
+    game: {
+      type: String,
+      required: true
     },
-    console:{
-        type: String,
-        enum: console,
-        default: 'pc'
-      },
-      Level: {
-        type: String,
-        enum: level,
-        required: true
+    console: {
+      type: String,
+      enum: console,
+      default: 'pc'
     },
-    averageBet:{
-        type : Number ,
-        default:5.0
+    Level: {
+      type: String,
+      enum: level,
+      required: true
+    },
+    averageBet: {
+      type: Number,
+      default: 5.0
     },
     challengeRequester: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     userToChallenge: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
-    discussion: { type: mongoose.Schema.Types.ObjectId, ref: 'Discussion' },
-    
+    discussion: { type: mongoose.Schema.Types.ObjectId, ref: 'Discussion' }
   },
   { timestamps: true }
 );
-const ALLOWED_FIELDS = ['id', 'enabled','game','console','Level','averageBet', 'challengeRequester','userToChallenge', 'discussion', 'createdAt'];
+const ALLOWED_FIELDS = [
+  'id',
+  'enabled',
+  'game',
+  'console',
+  'Level',
+  'averageBet',
+  'challengeRequester',
+  'userToChallenge',
+  'discussion',
+  'createdAt'
+];
 
 ChallengeSchema.method({
   // query is optional, e.g. to transform data for response but only include certain "fields"
