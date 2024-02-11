@@ -57,6 +57,10 @@ const userSchema = new mongoose.Schema(
       enum: roles,
       default: 'user'
     },
+    online: {
+      type: Boolean,
+      default: false
+    },
     picture: {
       type: String,
       trim: true
@@ -94,7 +98,8 @@ const ALLOWED_FIELDS = [
   'dicussions',
   'phoneNumber',
   'dateOfBirth',
-  'createdAt'
+  'createdAt',
+  'online'
 ];
 
 /**

@@ -30,7 +30,7 @@ function generateTokenResponse(user: any, accessToken: string) {
  */
 exports.register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await new User(req.body).save();
+    const user = await new User({ ...req.body, online: true }).save();
     const userTransformed = user.transform();
     const token = generateTokenResponse(user, user.token());
     res.status(httpStatus.CREATED);
@@ -65,6 +65,7 @@ exports.login = async (req: Request, res: Response, next: NextFunction) => {
       slackWebhook(`User logged in: ${email} - IP: ${ip} - User Agent: ${headers['user-agent']}`);
     }
     const userTransformed = user.transform();
+    await User.findOneAndUpdate({ _id: userTransformed.id }, { online: true }, {});
     const data = { token, user: userTransformed };
     return apiJson({ req, res, data });
   } catch (error) {
@@ -79,9 +80,10 @@ exports.login = async (req: Request, res: Response, next: NextFunction) => {
 exports.logout = async (req: Request, res: Response, next: NextFunction) => {
   console.log('- logout');
   try {
-    const { userId } = req.body;
-    await RefreshToken.findAndDeleteToken({ userId });
+    const { _id } = req.route.meta.user;
+    await RefreshToken.findAndDeleteToken({ userId: _id });
     const data = { status: 'OK' };
+    await User.findOneAndUpdate({ _id: _id }, { online: false }, {});
     return apiJson({ req, res, data });
   } catch (error) {
     return next(error);

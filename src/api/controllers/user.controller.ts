@@ -19,6 +19,8 @@ exports.load = async (req: Request, res: Response, next: NextFunction, id: any) 
     const user = await User.get(id);
     req.route.meta = req.route.meta || {};
     req.route.meta.user = user;
+    user.online = true;
+    await user.save();
     return next();
   } catch (error) {
     return errorHandler(error, req, res);
@@ -117,8 +119,6 @@ exports.listUserNotes = async (req: Request, res: Response, next: NextFunction) 
     next(e);
   }
 };
-
-
 
 /**
  * Read a user's note.

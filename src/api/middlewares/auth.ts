@@ -46,6 +46,8 @@ const handleJWT = (req: any, res: any, next: any, roles: any) => async (err: any
     return next(apiError);
   }
 
+  console.log('handleJWT: user', user);
+
   req.route.meta = req.route.meta || {};
   req.route.meta.user = user;
 
@@ -55,7 +57,9 @@ const handleJWT = (req: any, res: any, next: any, roles: any) => async (err: any
 exports.ADMIN = ADMIN;
 exports.LOGGED_USER = LOGGED_USER;
 
-exports.authorize = (roles = User.roles) => (req: any, res: any, next: any) =>
-  passport.authenticate('jwt', { session: false }, handleJWT(req, res, next, roles))(req, res, next);
+exports.authorize =
+  (roles = User.roles) =>
+  (req: any, res: any, next: any) =>
+    passport.authenticate('jwt', { session: false }, handleJWT(req, res, next, roles))(req, res, next);
 
 exports.oAuth = (service: any) => passport.authenticate(service, { session: false });
